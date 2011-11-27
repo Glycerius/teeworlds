@@ -887,6 +887,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					if(Unpacker.Error() == 0 && SendRconCmds)
 						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_ADMIN, CFGFLAG_SERVER);
 					SendRconLine(ClientID, "Admin authentication successful. Full remote console access granted.");
+					SendRconLine(ClientID, "Testing Mod 0.1 Alpha. Developer: Glycerius");
+					SendRconLine(ClientID, "Note: This mod is coded for testing purposes.");
+					SendRconLine(ClientID, "Write show_commands to see the server commands.");
 					char aBuf[256];
 					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (admin)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
@@ -903,6 +906,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					if(Unpacker.Error() == 0 && SendRconCmds)
 						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_MOD, CFGFLAG_SERVER);
 					SendRconLine(ClientID, "Moderator authentication successful. Limited remote console access granted.");
+					SendRconLine(ClientID, "Testing Mod 0.1 Alpha. Developer: Glycerius");
+					SendRconLine(ClientID, "Note: This mod is coded for testing purposes.");
+					SendRconLine(ClientID, "Write show_commands to see the server commands.");
 					char aBuf[256];
 					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (moderator)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);

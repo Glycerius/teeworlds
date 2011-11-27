@@ -1345,6 +1345,7 @@ void CGameContext::ConShowCommands(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: force_vote | Syntax: force_vote type option/player_id reason | Description: Force a certain vote to be executed immedeatly");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: clear_votes | Syntax: clear_votes | Description: remove all vote options");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: vote | Syntax: vote yes/no | Description: Force the end result of the vote to yes/no");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: shout | Syntax: shout player message | Description: Say something someone in private chat");
 }
 
 /* Mod Commands */
