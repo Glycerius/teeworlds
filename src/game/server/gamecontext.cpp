@@ -1298,6 +1298,57 @@ void CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 
+/* Mod Commands */
+
+void CGameContext::ConShout(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = clamp(pResult->GetInteger(0), 0, (int)MAX_CLIENTS-1);
+
+	if(!pSelf->m_apPlayers[ClientID])
+		return;
+
+	pSelf->SendChatTarget(ClientID, pResult->GetString(1));
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "Shout Log: An Admin shouted to %s : %s", pSelf->Server()->ClientName(ClientID), pResult->GetString(1));
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+}
+
+void CGameContext::ConShowCommands(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "=========== Server Commands ===========");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: echo | Syntax: echo text | Description: Print a text in console");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: exec | Syntax: exec file | Description: Execute the commands in the file");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: kick | Syntax: kick id | Description: Kick the user with the specified id directly");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: ban | Syntax: ban ip/id minutes | Description: Ban the ip from the server for the given time");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: unban | Syntax: unban ip | Description: Unban the ip");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: bans | Syntax: bans | Description: Show a list of bans");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: status | Syntax: status | Description: List the players' id, ip, name and score");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: shutdown | Syntax: shutdown | Description: Shut the server down");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: reload | Syntax: reload | Description: Reload the map");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: record | Syntax: record filename | Description: Start recording");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: stoprecord | Syntax: stoprecord | Description: Stop recording");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: tune | Syntax: tune variable value | Description: Tune the variable");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: tunereset | Syntax: tune_reset | Description: Reset the tuning to default");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: tune_dump | Syntax: tune_dump | Description: Make a dump that shows what tuning is used");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: change_map | Syntax: change_map mapname | Description: Change to the specified map");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: restart | Syntax: restart time | Description: Restart the round (time is optional)");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: broadcast | Syntax: broadcast text | Description: Broadcast the text");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: say | Syntax: say text | Description: Send a notice");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: set_team | Syntax: set_team client_id team_id | Description: Move a player to a specific team (0 = red, 1 = blue, -1 = spectators)");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: set_team_all | Syntax: set_team_all team_id | Description: Move all players to a specific team");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: add_vote | Syntax: add_vote description command | Description: Add a vote option for the provided command with the provided description");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: remove_vote | Syntax: remove_vote command | Description: remove a vote option");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: force_vote | Syntax: force_vote type option/player_id reason | Description: Force a certain vote to be executed immedeatly");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: clear_votes | Syntax: clear_votes | Description: remove all vote options");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: vote | Syntax: vote yes/no | Description: Force the end result of the vote to yes/no");
+}
+
+/* Mod Commands */
+
 void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
@@ -1333,6 +1384,9 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("force_vote", "ss?r", CFGFLAG_SERVER, ConForceVote, this, "Force a voting option");
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
+
+	Console()->Register("shout", "ir", CFGFLAG_SERVER, ConShout, this, "Say someone something in private chat");
+	Console()->Register("show_commands", "", CFGFLAG_SERVER, ConShowCommands, this, "Show server commands");
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 }
