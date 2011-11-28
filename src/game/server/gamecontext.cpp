@@ -1366,6 +1366,54 @@ void CGameContext::ConShowCommands(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: force_vote | Syntax: force_vote type option/player_id reason | Description: Force a certain vote to be executed immedeatly");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: clear_votes | Syntax: clear_votes | Description: remove all vote options");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: vote | Syntax: vote yes/no | Description: Force the end result of the vote to yes/no");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: pause | Syntax: pause | Description: Pauses the game");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: shout | Syntax: shout player message | Description: Say something someone in private chat");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Command: kill_player | Syntax: kill_player player | Description: Kill someone");
+}
+
+void CGameContext::ConPause(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	if(pSelf->m_World.m_Paused == false)
+	{
+		pSelf->m_World.m_Paused = true;
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Game paused by an administrator.");
+		pSelf->SendChatTarget(-1, "Game paused by an administrator.");
+	}
+	else
+	{
+		pSelf->m_World.m_Paused = false;
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Game unpaused by an administrator.");
+		pSelf->SendChatTarget(-1, "Game unpaused by an administrator.");
+	}
+}
+
+void CGameContext::ConShout(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = clamp(pResult->GetInteger(0), 0, (int)MAX_CLIENTS-1);
+
+	if(!pSelf->m_apPlayers[ClientID])
+		return;
+
+	pSelf->SendChatTarget(ClientID, pResult->GetString(1));
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "Shout Log: An administrator shouted to %s : %s", pSelf->Server()->ClientName(ClientID), pResult->GetString(1));
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+}
+
+void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = clamp(pResult->GetInteger(0), 0, (int)MAX_CLIENTS-1);
+
+	if(!pSelf->m_apPlayers[ClientID])
+		return;
+
+	pSelf->m_apPlayers[ClientID]->KillCharacter(WEAPON_SELF);
+	pSelf->SendChatTarget(ClientID, "You are killed by an administrator.");
 }
 
 void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
@@ -1405,6 +1453,9 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 
 	Console()->Register("show_commands", "", CFGFLAG_SERVER, ConShowCommands, this, "Show server commands");
+	Console()->Register("pause", "", CFGFLAG_SERVER, ConPause, this, "Pause the game");
+	Console()->Register("shout", "ir", CFGFLAG_SERVER, ConShout, this, "Say someone something in private chat");
+	Console()->Register("kill_player", "i", CFGFLAG_SERVER, ConKillPlayer, this, "Kill someone");
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 }
