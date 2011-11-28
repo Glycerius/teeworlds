@@ -512,7 +512,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	SendChatTarget(ClientID, "This server is running iLevel Mod 0.5 Beta. Write /cmdlist for commands.");
+	SendChatTarget(ClientID, "This server is running iLevel Mod 0.5 Beta. Write /info for mod information.");
 	SendChatTarget(ClientID, "Developers: Glycerius and Learath2.");
 
 	m_VoteUpdate = true;
@@ -620,6 +620,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			SendChatTarget(ClientID, "======= Credits =======");
 			SendChatTarget(ClientID, "Developers: Glycerius and Learath2");
 			SendChatTarget(ClientID, "To get your own copy, visit Glycerius's or Learath2's GitHub.");
+		}
+		else if(!str_comp_nocase(pMsg->m_pMessage, "/rules"))
+		{
+			SendChatTarget(ClientID, "======= Rules =======");
+			SendChatTarget(ClientID, "Dont use bot clients. Lifetime ban.");
+			SendChatTarget(ClientID, "Dont camp and dont do spawnkilling.");
+			SendChatTarget(ClientID, "Dont flame anybody. Dont use racial words.");
 		}
 		else if(!str_comp_nocase(pMsg->m_pMessage, "/suicide"))
 		{
