@@ -1,5 +1,6 @@
 bam
 .bam
+bam.exe
 config.lua
 datasrc/__pycache__
 datasrc/*.pyc
