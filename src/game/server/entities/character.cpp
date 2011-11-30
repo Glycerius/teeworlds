@@ -60,6 +60,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_LastWeapon = WEAPON_HAMMER;
 	m_QueuedWeapon = -1;
 
+	Streak = 0;
+
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
 

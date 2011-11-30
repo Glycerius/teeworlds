@@ -62,6 +62,9 @@ public:
 
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
+	int GetStreak() { return Streak; };
+	void IncStreak() { Streak++; };
+	void ResStreak() { Streak = 0; };
 
 private:
 	// player controlling this character
@@ -93,6 +96,9 @@ private:
 
 	int m_EmoteType;
 	int m_EmoteStop;
+
+	//iLevel Killstreak
+	int Streak;
 
 	// last tick that the player took any action ie some input
 	int m_LastAction;
