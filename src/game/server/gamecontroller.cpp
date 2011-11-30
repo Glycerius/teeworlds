@@ -343,12 +343,13 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	if(pKiller == pVictim->GetPlayer())
 	{
 		pVictim->GetPlayer()->m_Score--; // suicide
+
 		if(pVictim->GetStreak()>=5)
 		{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "%s's %d killstreak has ended by suiciding", Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetStreak());
-		GameServer()->SendBroadcast(aBuf, -1);
-		pVictim->ResStreak();
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "%s's %d killstreak has ended by suiciding", Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetStreak());
+			GameServer()->SendBroadcast(aBuf, -1);
+			pVictim->ResStreak();
 		}
 	}
 	else
@@ -357,23 +358,51 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 			pKiller->m_Score--; // teamkill
 		else
 			pKiller->m_Score++; // normal kill
+
 		    pKiller->GetCharacter()->IncStreak();
 			if(pVictim->GetStreak() >= 5)
 			{
-			char bBuf[256];
-			str_format(bBuf, sizeof(bBuf), "%s's %d killstreak has ended by %s", Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetStreak(), Server()->ClientName(pKiller->GetCID()));
-			GameServer()->SendBroadcast(bBuf, -1);
-			}
-			
+				char bBuf[256];
+				str_format(bBuf, sizeof(bBuf), "%s's %d killstreak has ended by %s", Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetStreak(), Server()->ClientName(pKiller->GetCID()));
+				GameServer()->SendBroadcast(bBuf, -1);
+			}		
 	}
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
-	if(pKiller->GetCharacter()->GetStreak() >= 5){
+	if(pKiller->GetCharacter()->GetStreak() >= 5)
+	{
 		if(pKiller->GetCharacter()->GetStreak()%5 == 0)
 		{
-			char Buf[256];
-			str_format(Buf, sizeof(Buf), "%s is on a Killing Spree(%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-			GameServer()->SendBroadcast(Buf, -1);
+			if(pKiller->GetCharacter()->GetStreak() == 10)
+			{
+				char Buf[256];
+				str_format(Buf, sizeof(Buf), "%s is on a rampage (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
+				GameServer()->SendBroadcast(Buf, -1);
+			}
+			else if(pKiller->GetCharacter()->GetStreak() == 15)
+			{
+				char Buf[256];
+				str_format(Buf, sizeof(Buf), "%s is dominating (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
+				GameServer()->SendBroadcast(Buf, -1);
+			}
+			else if(pKiller->GetCharacter()->GetStreak() == 20)
+			{
+				char Buf[256];
+				str_format(Buf, sizeof(Buf), "%s is unstoppable (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
+				GameServer()->SendBroadcast(Buf, -1);
+			}
+			else if(pKiller->GetCharacter()->GetStreak() >= 25)
+			{
+				char Buf[256];
+				str_format(Buf, sizeof(Buf), "%s is godlike (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
+				GameServer()->SendBroadcast(Buf, -1);
+			}
+			else
+			{
+				char Buf[256];
+				str_format(Buf, sizeof(Buf), "%s is on a Killing Spree (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
+				GameServer()->SendBroadcast(Buf, -1);
+			}
 		}
 	}
 	return 0;
