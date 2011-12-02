@@ -369,42 +369,20 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	}
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
-	if(pKiller->GetCharacter()->GetStreak() >= 5)
+
+	if(pKiller->GetCharacter()->GetStreak() >= 5 && pKiller->GetCharacter()->GetStreak()%5 == 0)
 	{
-		if(pKiller->GetCharacter()->GetStreak()%5 == 0)
-		{
-			if(pKiller->GetCharacter()->GetStreak() == 10)
-			{
-				char Buf[256];
-				str_format(Buf, sizeof(Buf), "%s is on a rampage (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-				GameServer()->SendBroadcast(Buf, -1);
-			}
-			else if(pKiller->GetCharacter()->GetStreak() == 15)
-			{
-				char Buf[256];
-				str_format(Buf, sizeof(Buf), "%s is dominating (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-				GameServer()->SendBroadcast(Buf, -1);
-			}
-			else if(pKiller->GetCharacter()->GetStreak() == 20)
-			{
-				char Buf[256];
-				str_format(Buf, sizeof(Buf), "%s is unstoppable (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-				GameServer()->SendBroadcast(Buf, -1);
-			}
-			else if(pKiller->GetCharacter()->GetStreak() >= 25)
-			{
-				char Buf[256];
-				str_format(Buf, sizeof(Buf), "%s is godlike (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-				GameServer()->SendBroadcast(Buf, -1);
-			}
-			else
-			{
-				char Buf[256];
-				str_format(Buf, sizeof(Buf), "%s is on a Killing Spree (%d Kills)", Server()->ClientName(pKiller->GetCID()), pKiller->GetCharacter()->GetStreak());
-				GameServer()->SendBroadcast(Buf, -1);
-			}
-		}
+	char cBuf[256];
+	char spreenote[10][32] = { "On A Killing Spree", "On A Rampage", "Dominating", "Unstoppable", "Godlike", "Cheating", "Botting", "On Alcohol", "On Drugs", "A Professional!" };
+	int spreemsgtyp = (pKiller->GetCharacter()->GetStreak()/5) - 1;
+
+	if(spreemsgtyp > 10) spreemsgtyp = 10;
+
+	str_format(cBuf, sizeof(cBuf), "%s is %s (%d Kills)", Server()->ClientName(pKiller->GetCID()), spreenote[spreemsgtyp], pKiller->GetCharacter()->GetStreak());
+
+	GameServer()->SendBroadcast(cBuf, -1);
 	}
+
 	return 0;
 }
 
